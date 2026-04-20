@@ -1,0 +1,80 @@
+{
+  "storyName": "SAP O2C Analytics Dashboard",
+  "storyDescription": "End-to-end Order-to-Cash analytics: KPIs, trends, segmentation, forecast, anomaly detection",
+  "theme": "Morning_Horizon",
+
+  "pages": [
+    {
+      "pageId": "P01",
+      "pageName": "O2C Overview",
+      "widgets": [
+        { "type": "NumericPoint", "measure": "NetValue",           "label": "Total Revenue",      "position": {"x":0,"y":0,"w":2,"h":2} },
+        { "type": "NumericPoint", "measure": "OnTimeDeliveryRate", "label": "On-Time Delivery %", "position": {"x":2,"y":0,"w":2,"h":2} },
+        { "type": "NumericPoint", "measure": "DeliveryDays",       "label": "Avg Delivery Days",  "position": {"x":4,"y":0,"w":2,"h":2} },
+        { "type": "NumericPoint", "measure": "CancellationRate",   "label": "Cancellation Rate",  "position": {"x":6,"y":0,"w":2,"h":2} },
+        { "type": "Line",  "dimension": "OrderDate(Month)", "measure": "NetValue",       "label": "Monthly Revenue Trend", "position": {"x":0,"y":2,"w":8,"h":4} },
+        { "type": "Bar",   "dimension": "Region",           "measure": "NetValue",       "label": "Revenue by Region",    "position": {"x":0,"y":6,"w":4,"h":3} },
+        { "type": "Donut", "dimension": "OverallStatus",    "measure": "OrderQuantity",  "label": "Order Status Split",   "position": {"x":4,"y":6,"w":4,"h":3} }
+      ]
+    },
+    {
+      "pageId": "P02",
+      "pageName": "Delivery Analytics",
+      "widgets": [
+        { "type": "Bar",       "dimension": "DeliveryBucket", "measure": "OrderQuantity",    "label": "Orders by Delivery Speed" },
+        { "type": "Scatter",   "xMeasure": "DeliveryDays",    "yMeasure": "NetValue",        "colorDimension": "Region", "label": "Delivery Days vs Revenue" },
+        { "type": "Waterfall", "dimension": "Region",         "measure": "OnTimeDeliveryRate","label": "On-Time % by Region" },
+        { "type": "Bar",       "dimension": "PaymentTerms",   "measure": "NetValue",         "label": "Revenue by Payment Terms" }
+      ]
+    },
+    {
+      "pageId": "P03",
+      "pageName": "Customer Segmentation (RFM)",
+      "sourceModel": "ZV_O2C_RFM",
+      "note": "Create a second model from ZV_O2C_RFM view. Bubble chart: X=RecencyDays, Y=OrderFrequency, Size=TotalRevenue, Color=RFM_Segment",
+      "widgets": [
+        { "type": "NumericPoint", "measure": "TotalRevenue",    "filter": "RFM_Segment=Champion",       "label": "Champion Revenue" },
+        { "type": "NumericPoint", "measure": "OrderFrequency",  "filter": "RFM_Segment=Loyal Customer", "label": "Loyal Customers" },
+        { "type": "Scatter",      "xMeasure": "RecencyDays",    "yMeasure": "OrderFrequency",
+          "sizeMeasure": "TotalRevenue", "colorDimension": "RFM_Segment",                               "label": "RFM Bubble Chart" },
+        { "type": "Table",        "rows": "CustomerName",
+          "columns": ["RecencyDays","OrderFrequency","TotalRevenue","AvgOrderValue","RFM_Segment"],      "label": "Customer RFM Table" }
+      ]
+    },
+    {
+      "pageId": "P04",
+      "pageName": "Predictive Forecast",
+      "note": "Create via: SAC top menu > Predictive Scenarios > New > Time Series Forecast. Target=NetValue, Time=OrderDate, Horizon=6 months",
+      "predictiveScenario": {
+        "scenarioType": "TimeSeriesForecast",
+        "targetMeasure": "NetValue",
+        "timeDimension": "OrderDate",
+        "forecastHorizon": 6,
+        "forecastUnit": "Month",
+        "confidenceInterval": 80,
+        "algorithm": "AutoAI"
+      },
+      "widgets": [
+        { "type": "Line",  "showForecast": true, "showConfidenceBand": true, "label": "Revenue Forecast + Confidence Band" },
+        { "type": "Table", "showForecastValues": true,                        "label": "Monthly Forecast Table" }
+      ]
+    },
+    {
+      "pageId": "P05",
+      "pageName": "Anomaly Detection",
+      "note": "Right-click any Revenue chart > Add Smart Insights > Find Outliers on NetValue. Flagged orders appear below.",
+      "widgets": [
+        { "type": "Scatter",  "xDimension": "SalesOrder", "yMeasure": "NetValue", "smartInsights": "outlier", "label": "Revenue Outlier Scatter" },
+        { "type": "Table",    "filter": "SmartInsightFlag=Outlier",                                             "label": "Flagged Anomalous Orders" }
+      ]
+    }
+  ],
+
+  "globalFilters": [
+    { "dimension": "OrderDate",     "type": "DateRange",   "label": "Date Range"     },
+    { "dimension": "Region",        "type": "MultiSelect", "label": "Region"         },
+    { "dimension": "Material",      "type": "MultiSelect", "label": "Product"        },
+    { "dimension": "PaymentTerms",  "type": "MultiSelect", "label": "Payment Terms"  },
+    { "dimension": "OverallStatus", "type": "MultiSelect", "label": "Order Status"   }
+  ]
+}

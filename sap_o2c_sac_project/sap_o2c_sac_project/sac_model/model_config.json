@@ -1,0 +1,68 @@
+{
+  "modelName": "O2C_Analytics_Model",
+  "modelDescription": "SAP Order-to-Cash Analytics Model for SAC",
+  "connectionType": "LiveDataConnection",
+  "sourceSystem": "S4HANA",
+  "sourceView": "ZV_O2C_ANALYTICS",
+
+  "dimensions": [
+    { "name": "SalesOrder",           "label": "Sales Order",          "type": "String" },
+    { "name": "CustomerID",           "label": "Customer ID",          "type": "String" },
+    { "name": "CustomerName",         "label": "Customer Name",        "type": "String" },
+    { "name": "Region",               "label": "Region",               "type": "String" },
+    { "name": "Material",             "label": "Material",             "type": "String" },
+    { "name": "MaterialDescription",  "label": "Product",              "type": "String" },
+    { "name": "SalesOrg",             "label": "Sales Org",            "type": "String" },
+    { "name": "PaymentTerms",         "label": "Payment Terms",        "type": "String" },
+    { "name": "OverallStatus",        "label": "Order Status",         "type": "String" },
+    { "name": "OnTimeDelivery",       "label": "On-Time (Y/N)",        "type": "String" },
+    {
+      "name": "OrderDate",
+      "label": "Order Date",
+      "type": "Date",
+      "hierarchy": ["Year", "Quarter", "Month", "Day"]
+    },
+    { "name": "BillingDate",          "label": "Billing Date",         "type": "Date" }
+  ],
+
+  "measures": [
+    { "name": "NetValue",             "label": "Net Revenue",          "aggregation": "SUM", "format": "Currency" },
+    { "name": "OrderQuantity",        "label": "Order Quantity",       "aggregation": "SUM", "format": "Number"   },
+    { "name": "DeliveryDays",         "label": "Delivery Days",        "aggregation": "AVG", "format": "Number"   },
+    { "name": "OrderToBillCycleDays", "label": "Order-to-Bill Days",   "aggregation": "AVG", "format": "Number"   }
+  ],
+
+  "calculatedMeasures": [
+    {
+      "name":    "OnTimeDeliveryRate",
+      "label":   "On-Time Delivery %",
+      "formula": "COUNTIF([OnTimeDelivery]='Y') / COUNT([SalesOrder]) * 100",
+      "format":  "Percentage"
+    },
+    {
+      "name":    "CancellationRate",
+      "label":   "Cancellation Rate %",
+      "formula": "COUNTIF([OverallStatus]='C') / COUNT([SalesOrder]) * 100",
+      "format":  "Percentage"
+    },
+    {
+      "name":    "RevenuePerOrder",
+      "label":   "Avg Revenue per Order",
+      "formula": "SUM([NetValue]) / COUNT([SalesOrder])",
+      "format":  "Currency"
+    }
+  ],
+
+  "calculatedDimensions": [
+    {
+      "name":  "RFM_Segment",
+      "label": "Customer Segment",
+      "formula": "IF([TotalRevenue] >= PERCENTILE([TotalRevenue],75) AND [OrderFrequency] >= PERCENTILE([OrderFrequency],75), 'Champion', IF([TotalRevenue] >= PERCENTILE([TotalRevenue],50), 'Loyal Customer', IF([RecencyDays] <= 90, 'Potential Loyalist', 'At Risk')))"
+    },
+    {
+      "name":  "DeliveryBucket",
+      "label": "Delivery Speed",
+      "formula": "IF([DeliveryDays] <= 3, 'Express (1-3d)', IF([DeliveryDays] <= 7, 'Standard (4-7d)', IF([DeliveryDays] <= 14, 'Slow (8-14d)', 'Critical (15d+)')))"
+    }
+  ]
+}

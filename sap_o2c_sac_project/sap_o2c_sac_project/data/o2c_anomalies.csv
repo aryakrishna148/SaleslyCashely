@@ -1,0 +1,13 @@
+SalesOrder,CustomerName,MaterialDescription,Region,NetValue,ZScore,OverallStatus,OrderDate
+5001260,HCL Systems,Monitor,East,3638352,3.228,B,2024-02-16
+5001338,Tata Motors,Tablet,South,3491532,3.051,B,2024-04-25
+5001322,Infosys Ltd,Tablet,East,3391104,2.93,B,2024-12-26
+5001190,Bajaj Auto,Printer,North,3353370,2.885,B,2024-04-06
+5001500,Tata Motors,Mobile Phone,West,3256037,2.767,B,2024-08-31
+5001210,Bajaj Auto,Tablet,West,3225895,2.731,B,2024-08-13
+5001191,Tata Motors,Mobile Phone,South,3208695,2.71,B,2024-09-02
+5001454,Hero MotoCorp,Monitor,North,3179443,2.675,B,2024-04-02
+5001001,Infosys Ltd,Laptop,East,3125905,2.611,B,2024-04-24
+5001147,Infosys Ltd,Monitor,West,3092447,2.57,C,2024-03-06
+5001303,Reliance Ind,Mobile Phone,West,3081739,2.558,A,2024-09-16
+5001150,Wipro Tech,Printer,East,3069235,2.542,B,2024-01-15
